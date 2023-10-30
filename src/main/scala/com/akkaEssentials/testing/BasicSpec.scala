@@ -1,13 +1,14 @@
 package com.akkaEssentials.testing
 
-import akka.actor.{ Actor, ActorSystem, Props }
-import akka.testkit.{ ImplicitSender, TestKit }
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.wordspec.AnyWordSpecLike
-
 import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
 import scala.util.Random
+
+import akka.actor.{ Actor, ActorSystem, Props }
+import akka.testkit.{ ImplicitSender, TestKit }
+
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.wordspec.AnyWordSpecLike
 
 class BasicSpec extends TestKit(ActorSystem("BasicSpec")) with ImplicitSender with AnyWordSpecLike with BeforeAndAfterAll {
 
