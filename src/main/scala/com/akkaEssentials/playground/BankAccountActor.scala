@@ -1,33 +1,33 @@
 package com.akkaEssentials.playground
 
-import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
+import akka.actor.{ Actor, ActorLogging, ActorRef, ActorSystem, Props }
 
 //
 object BankAccountActor {
-  case class Deposit(amount:Int)
-  case class Withdraw(amount:Int)
+  case class Deposit(amount: Int)
+  case class Withdraw(amount: Int)
   case object Statement
   case class TransactionSuccess(message: String)
   case class TransactionFailure(reason: String)
 }
 
-class BankAccountActor extends Actor{
+class BankAccountActor extends Actor {
   import BankAccountActor._
 
   var balance = 0
 
   override def receive: Receive = {
-    case Deposit(amount:Int)  =>
+    case Deposit(amount: Int)  =>
       if (amount < 0)
         sender() ! TransactionFailure("Invalid deposit amount")
       else {
         balance += amount
         sender() ! TransactionSuccess(s"Deposit of amount:($amount) was successful!")
       }
-    case Withdraw(amount:Int) =>
-      if (amount < 0 )
+    case Withdraw(amount: Int) =>
+      if (amount < 0)
         sender() ! TransactionFailure("Invalid withdraw amount")
-        else if (amount > balance ) sender() ! TransactionFailure("Insufficient funds")
+      else if (amount > balance) sender() ! TransactionFailure("Insufficient funds")
       else {
         balance -= amount
         sender() ! TransactionSuccess(s"Successfully withdrew $amount !")
@@ -43,7 +43,7 @@ object PersonActor {
   case class SavingsAccount(account: ActorRef)
 }
 
-class PersonActor extends Actor with ActorLogging{
+class PersonActor extends Actor with ActorLogging {
   import PersonActor._
   import BankAccountActor._
 
@@ -63,7 +63,7 @@ object MainBankApp extends App {
   val system = ActorSystem("Bank-Sys")
 
   val accountActor = system.actorOf(Props[BankAccountActor], "bankAccountActor")
-  val personActor =  system.actorOf(Props[PersonActor], "BigManKiongos")
+  val personActor  = system.actorOf(Props[PersonActor], "BigManKiongos")
 
   personActor ! SavingsAccount(accountActor)
 

@@ -1,6 +1,6 @@
 package com.akkaEssentials.playground
 
-import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
+import akka.actor.{ Actor, ActorLogging, ActorSystem, Props }
 
 object CounterV2Actor {
   case class Increment(num: Int)
@@ -8,7 +8,7 @@ object CounterV2Actor {
   case object Print
 }
 
-class CounterV2Actor extends Actor with ActorLogging{
+class CounterV2Actor extends Actor with ActorLogging {
   import CounterV2Actor._
 
   override def receive: Receive = countReceive(0)
@@ -25,7 +25,7 @@ class CounterV2Actor extends Actor with ActorLogging{
   }
 }
 
-object CounterV2App extends App{
+object CounterV2App extends App {
   val system: ActorSystem = ActorSystem("CounterV2-Sys")
 
   val counterV2Actor = system.actorOf(Props[CounterV2Actor], "counterActor")

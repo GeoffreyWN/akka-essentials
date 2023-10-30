@@ -1,7 +1,7 @@
 package com.akkaEssentials.testing
 
-import akka.actor.{Actor, ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestKit}
+import akka.actor.{ Actor, ActorSystem, Props }
+import akka.testkit.{ ImplicitSender, TestKit }
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
 
@@ -19,14 +19,13 @@ class BasicSpec extends TestKit(ActorSystem("BasicSpec")) with ImplicitSender wi
     TestKit.shutdownActorSystem(system)
   }
 
-
   // test suite
   import BasicSpec._
   "A SimpleActor" should {
     // test
     "send back the same message" in {
       val echoActor = system.actorOf(Props[SimpleActor])
-      val message = "hello test"
+      val message   = "hello test"
 
       echoActor ! message
 
@@ -37,7 +36,7 @@ class BasicSpec extends TestKit(ActorSystem("BasicSpec")) with ImplicitSender wi
   "A BlackholeActor" should {
     "send back some message" in {
       val blackholeActor = system.actorOf(Props[BlackholeActor])
-      val message = "hello test"
+      val message        = "hello test"
 
       blackholeActor ! message
 
@@ -47,18 +46,20 @@ class BasicSpec extends TestKit(ActorSystem("BasicSpec")) with ImplicitSender wi
 
   // message assertions
   "A LabTestActor" should {
-    val labTestActor = system.actorOf(Props[LabTestActor]) // created outside the test but inside the test suite to allow for reuse (for stateful actors create them inside every test)
+    val labTestActor = system.actorOf(
+      Props[LabTestActor]
+    ) // created outside the test but inside the test suite to allow for reuse (for stateful actors create them inside every test)
 
     "turn a string into an uppercase string" in {
       labTestActor ! "Akka is awesome, right?"
       val reply = expectMsgType[String]
 
-      assert( reply == "AKKA IS AWESOME, RIGHT?")
+      assert(reply == "AKKA IS AWESOME, RIGHT?")
     }
 
     "reply to a greeting" in {
       labTestActor ! "greeting"
-      expectMsgAnyOf( "Hello champ" , "Hi kiongos!")
+      expectMsgAnyOf("Hello champ", "Hi kiongos!")
     }
 
     "reply with favorite tech" in {
@@ -71,7 +72,7 @@ class BasicSpec extends TestKit(ActorSystem("BasicSpec")) with ImplicitSender wi
       val messages = receiveN(2) // Seq[Any]
 
       // more assertions can be implemented
-      assert( messages.length == 2 )
+      assert(messages.length == 2)
     }
 
     "reply with cool tech in a fancy way" in {
@@ -79,12 +80,9 @@ class BasicSpec extends TestKit(ActorSystem("BasicSpec")) with ImplicitSender wi
 
       expectMsgPF() {
         case "Scala" => // only care that the PF (partial function) is defined
-        case "Akka" =>
+        case "Akka"  =>
       }
     }
-
-
-
 
   }
 
@@ -92,8 +90,8 @@ class BasicSpec extends TestKit(ActorSystem("BasicSpec")) with ImplicitSender wi
 
 object BasicSpec {
   class SimpleActor extends Actor {
-    override def receive: Receive = {
-      case message => sender() ! message
+    override def receive: Receive = { case message =>
+      sender() ! message
     }
   }
 
@@ -105,9 +103,9 @@ object BasicSpec {
     val random = new Random()
 
     override def receive: Receive = {
-      case "greeting" =>
-        if(random.nextBoolean()) sender() ! "Hello champ" else sender() ! "Hi kiongos!"
-      case "favoriteTech" =>
+      case "greeting"      =>
+        if (random.nextBoolean()) sender() ! "Hello champ" else sender() ! "Hi kiongos!"
+      case "favoriteTech"  =>
         sender() ! "Scala"
         sender() ! "Akka"
       case message: String => sender() ! message.toUpperCase()

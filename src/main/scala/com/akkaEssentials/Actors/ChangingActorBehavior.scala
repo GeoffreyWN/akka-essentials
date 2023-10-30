@@ -1,6 +1,6 @@
 package com.akkaEssentials.Actors
 
-import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
+import akka.actor.{ Actor, ActorLogging, ActorRef, ActorSystem, Props }
 
 object Mom {
   case class MomStart(kidRef: ActorRef)
@@ -9,7 +9,7 @@ object Mom {
   val VEGETABLE = "veggies"
   val CHOCOLATE = "chocolate"
 }
-class Mom extends Actor with ActorLogging{
+class Mom extends Actor with ActorLogging {
   import Kid._
   import Mom._
 
@@ -20,17 +20,16 @@ class Mom extends Actor with ActorLogging{
       kidRef ! Food(CHOCOLATE)
       kidRef ! Food(CHOCOLATE)
       kidRef ! Ask("Wanna play?")
-    case KidAccept => log.info("Awesome kid is happy!")
-    case KidReject => log.info("Kid is sad but healthy!! So we still celebrate")
+    case KidAccept                  => log.info("Awesome kid is happy!")
+    case KidReject                  => log.info("Kid is sad but healthy!! So we still celebrate")
   }
 }
-
 
 object Kid {
   case object KidAccept
   case object KidReject
   val HAPPY = "happy"
-  val SAD = "sad"
+  val SAD   = "sad"
 }
 class Kid extends Actor {
   import Kid._
@@ -41,7 +40,7 @@ class Kid extends Actor {
   override def receive: Receive = {
     case Food(VEGETABLE) => state = SAD
     case Food(CHOCOLATE) => state = HAPPY
-    case Ask(_) =>
+    case Ask(_)          =>
       if (state == HAPPY) sender() ! KidAccept
       else sender() ! KidReject
   }
@@ -52,23 +51,27 @@ class StatelessKid extends Actor {
   import Mom._
 
   override def receive: Receive = happyReceive
-  def happyReceive: Receive = {
+  def happyReceive: Receive     = {
     case Food(VEGETABLE) => context.become(sadReceive, false) // change receive handler to sadReceive
-    case Food(CHOCOLATE) =>  // stay happy
-    case Ask(_) => sender() ! KidAccept
+    case Food(CHOCOLATE) => // stay happy
+    case Ask(_)          => sender() ! KidAccept
   }
-  def sadReceive: Receive = {
-    case Food(VEGETABLE) => context.become(sadReceive, false) // false value stacks the new handler on top of the old one // default true(replaces current handler)
+  def sadReceive: Receive       = {
+    case Food(VEGETABLE) =>
+      context.become(
+        sadReceive,
+        false
+      ) // false value stacks the new handler on top of the old one // default true(replaces current handler)
     case Food(CHOCOLATE) => context.unbecome()
-    case Ask(_) => sender() ! KidReject
+    case Ask(_)          => sender() ! KidReject
   }
 }
 
-object ChangingActorBehavior extends App{
+object ChangingActorBehavior extends App {
   val system = ActorSystem("ChangeActorBehavior-Sys")
 
-  val momActor = system.actorOf(Props[Mom], "momActor")
-  val kidActor = system.actorOf(Props[Kid], "kidActor")
+  val momActor           = system.actorOf(Props[Mom], "momActor")
+  val kidActor           = system.actorOf(Props[Kid], "kidActor")
   val statelessKidkActor = system.actorOf(Props[StatelessKid], "statelessKidActor")
 
   import Mom._
@@ -76,7 +79,5 @@ object ChangingActorBehavior extends App{
 //  momActor ! MomStart(kidActor)
 
   momActor ! MomStart(statelessKidkActor)
-
-
 
 }
